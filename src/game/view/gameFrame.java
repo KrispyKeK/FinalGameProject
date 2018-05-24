@@ -12,7 +12,7 @@ public class gameFrame extends JFrame
 	{
 		super();
 		this.controller = controller;
-		this.panel = panel;
+		this.panel = new gamePanel(controller);
 		setupFrame();
 	}
 	private void setupFrame() 
