@@ -17,34 +17,60 @@ public class gameController
 	{
 		
 	}
-	public String getAnswer(String input) 
+	public ArrayList<String> getAnswer(String input) 
 	{
-		String answer = "";
+		ArrayList<String> combination = new ArrayList<String>();
+		
+		String answer = input;
+		String instruction = "";
+		
 		Random randomActionGenerator = new Random();
-		int randomAction = randomActionGenerator.nextInt(5);
-		int randomLetter = randomActionGenerator.nextInt(7);
 		
-		System.out.println(randomAction + " " + randomLetter);
-		
+		int randomAction = randomActionGenerator.nextInt(4);
+		int randomLetter = randomActionGenerator.nextInt(5);
+		int randomLocation = randomActionGenerator.nextInt(6);
 		switch (randomAction) 
 		{
 		//Add
 		case 0:
-			
-		//Remove
+			if (input.length() < 7) 
+			{
+				answer += random.convertTextToArray(random.getWord()).get(randomLetter);
+				instruction += input + ".add(" + random.convertTextToArray(random.getWord()).get(randomLetter) + ");"; 
+				break;
+			}
+		//Pop
 		case 1:
-			
-		//Replace at Index
+			answer = answer.substring(0, answer.length()-1);
+			instruction += input + ".pop();";
+			break; 
+		//Set at Index
 		case 2:
-			
+			String set = answer.substring(randomLocation-1, randomLocation);
+			answer.replace(set, random.convertTextToArray(random.getWord()).get(randomLetter));
+			instruction += input + ".set(" + randomLocation + "," + random.convertTextToArray(random.getWord()).get(randomLetter) + ");";
+			break;
 		//Add at Index
 		case 3:
-			
+			if (input.length() < 7) 
+			{
+				String addIndex = answer.substring(randomLocation-1, randomLocation);
+				answer.replace(addIndex, random.convertTextToArray(random.getWord()).get(randomLetter));
+				instruction += input + ".addAtIndex(" + randomLocation + ", " + random.convertTextToArray(random.getWord()).get(randomLetter) + ");";
+				break;
+			}
 		//Remove at Index
 		case 4:
+			String removeIndex = answer.substring(randomLocation-1, randomLocation);
+			answer.replace(removeIndex, "");
+			instruction += input + ".removeAtIndex(" + randomLocation + ");";
+			break;
+		//Does nothing
+		default:
 			
 		}
-
-		return answer;
+		combination.add(answer);
+		combination.add(instruction);
+		return combination;
 	}
 }

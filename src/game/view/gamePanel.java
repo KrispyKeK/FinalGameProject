@@ -2,7 +2,9 @@ package game.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.*;
 import javax.swing.*;
 import game.controller.*;
 import game.model.*;
@@ -10,10 +12,13 @@ import game.model.*;
 public class gamePanel extends JPanel
 {
 	gameController controller;
-	word answerText;
 
 	//May change if I'm able to implement resizable JComponenets like how we added more elements in the Sandbox game
 	private JButton enter;
+	private JButton quiz;
+	private JButton hard;
+	private JButton normal;
+	private JButton easy;
 	
 	private JTextArea instruction;
 	
@@ -27,14 +32,16 @@ public class gamePanel extends JPanel
 	
 	private SpringLayout baseLayout;
 	
+	ArrayList<String> wordSet;
+	
 	public gamePanel(gameController controller) 
 	{
 		super();
 
-		answerText = new word("example");
 		this.controller = controller;
 
 		enter = new JButton("ENTER");
+		quiz = new JButton("QUIZ");
 		
 		instruction = new JTextArea("~INSTRUCTIONS~");
 		instruction.setEditable(false);
@@ -56,6 +63,7 @@ public class gamePanel extends JPanel
 	private void setupPanel() 
 	{
 		this.add(enter);
+		this.add(quiz);
 		
 		this.add(instruction);
 		
@@ -73,21 +81,32 @@ public class gamePanel extends JPanel
 	{
 		enter.addActionListener(new ActionListener() 
 		{
-			public void actionPerformed(ActionEvent VK_ENTER) 
+			public void actionPerformed(ActionEvent click) 
 			{
-				
+				if (getInput().equals(wordSet.get(0))) 
+				{
+					instruction.setText("~INSTRUCTIONS~");
+				}
+				else 
+				{
+					instruction.append("\nTry Again " + wordSet.get(0));
+				}
 			}
 		});
-		enter.addActionListener(new ActionListener() 
+		quiz.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent click) 
 			{
-				
+				wordSet = controller.getAnswer("example");
+				instruction.append("\n" + wordSet.get(1));
 			}
 		});
 	}
 	private void setupLayout() 
 	{
+		baseLayout.putConstraint(SpringLayout.WEST, quiz, 0, SpringLayout.WEST, enter);
+		baseLayout.putConstraint(SpringLayout.SOUTH, quiz, -6, SpringLayout.NORTH, enter);
+		baseLayout.putConstraint(SpringLayout.EAST, quiz, 0, SpringLayout.EAST, enter);
 		baseLayout.putConstraint(SpringLayout.NORTH, instruction, 10, SpringLayout.NORTH, this);
 		baseLayout.putConstraint(SpringLayout.SOUTH, instruction, -49, SpringLayout.NORTH, enter);
 		baseLayout.putConstraint(SpringLayout.NORTH, answerSeven, 0, SpringLayout.NORTH, enter);
@@ -118,4 +137,10 @@ public class gamePanel extends JPanel
 		baseLayout.putConstraint(SpringLayout.SOUTH, enter, -10, SpringLayout.SOUTH, this);
 		baseLayout.putConstraint(SpringLayout.EAST, enter, -10, SpringLayout.EAST, this);
 	}
+	private String getInput() 
+	{
+		String userInput = answerOne.getText() + answerTwo.getText() + answerThree.getText() + answerFour.getText() + answerFive.getText() + answerSix.getText() + answerSeven.getText();
+		return userInput;
+	}
 }
+

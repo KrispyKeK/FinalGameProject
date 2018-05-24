@@ -5,8 +5,5 @@ public class gameRunner {
 	{
 		gameController controller = new gameController();
 		controller.start();
-		for (int index = 0; index < 20; index++) {
-			controller.getAnswer("doesntmatter");
-		}
 	}
 }
