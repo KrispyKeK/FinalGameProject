@@ -22,6 +22,6 @@ public class word {
 		return text;
 	}
 	public void setWord() {
-		this.text = text;
+		this.text = text; 
 	}
 }

@@ -18,7 +18,7 @@ public class gameFrame extends JFrame
 	private void setupFrame() 
 	{
 		this.setContentPane(panel);
-		this.setTitle("Java Data Structure Puzzle");
+		this.setTitle("Java ArrayList<String> Puzzle");
 		this.setSize(450, 325);
 		this.setResizable(false);
 		this.setVisible(true);

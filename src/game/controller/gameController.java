@@ -8,23 +8,23 @@ public class gameController
 {
 	gameFrame frame;
 	word random;
+	String instruction;
 	public gameController() 
 	{
 		frame = new gameFrame(this);
 		random = new word("random");
+		instruction = "";
 	}
-	public void start() 
-	{
-		
-	}
-	public ArrayList<String> getAnswer(String input) 
+	public ArrayList<String> getAnswer(ArrayList<String> inputed) 
 	{
 		ArrayList<String> combination = new ArrayList<String>();
+		combination = inputed;
 		
-		String answer = input;
-		String instruction = "";
+		String input = "example";
 		
 		Random randomActionGenerator = new Random();
+		
+		instruction = "";
 		
 		int randomAction = randomActionGenerator.nextInt(4);
 		int randomLetter = randomActionGenerator.nextInt(5);
@@ -33,44 +33,58 @@ public class gameController
 		{
 		//Add
 		case 0:
-			if (input.length() < 7) 
+			if (inputed.size() < 7) 
 			{
-				answer += random.convertTextToArray(random.getWord()).get(randomLetter);
+				combination.add(random.convertTextToArray(random.getWord()).get(randomLetter));
 				instruction += input + ".add(" + random.convertTextToArray(random.getWord()).get(randomLetter) + ");"; 
 				break;
 			}
 		//Pop
 		case 1:
-			answer = answer.substring(0, answer.length()-1);
+			combination.remove(combination.size()-1);
 			instruction += input + ".pop();";
 			break; 
 		//Set at Index
 		case 2:
-			String set = answer.substring(randomLocation-1, randomLocation);
-			answer.replace(set, random.convertTextToArray(random.getWord()).get(randomLetter));
-			instruction += input + ".set(" + randomLocation + "," + random.convertTextToArray(random.getWord()).get(randomLetter) + ");";
+			if (inputed.size() > randomLocation) 
+			{
+				combination.set(randomLocation, random.convertTextToArray(random.getWord()).get(randomLetter));
+				instruction += input + ".set(" + randomLocation + "," + random.convertTextToArray(random.getWord()).get(randomLetter) + ");";		
+			}
 			break;
 		//Add at Index
 		case 3:
-			if (input.length() < 7) 
+			if (inputed.size() > randomLocation && inputed.size() < 7) 
 			{
-				String addIndex = answer.substring(randomLocation-1, randomLocation);
-				answer.replace(addIndex, random.convertTextToArray(random.getWord()).get(randomLetter));
+				combination.add(randomLocation, random.convertTextToArray(random.getWord()).get(randomLetter));
 				instruction += input + ".addAtIndex(" + randomLocation + ", " + random.convertTextToArray(random.getWord()).get(randomLetter) + ");";
 				break;
 			}
 		//Remove at Index
 		case 4:
-			String removeIndex = answer.substring(randomLocation-1, randomLocation);
-			answer.replace(removeIndex, "");
-			instruction += input + ".removeAtIndex(" + randomLocation + ");";
+			if (inputed.size() > randomLocation) 
+			{
+				combination.remove(randomLocation);
+				instruction += input + ".removeAtIndex(" + randomLocation + ");";
+			}
 			break;
 		//Does nothing
 		default:
 			
 		}
-		combination.add(answer);
-		combination.add(instruction);
 		return combination;
+	}
+	public String getInstruction() 
+	{
+		return instruction;
+	}
+	public String convertArrayToText(ArrayList<String> input) 
+	{
+		String returnString = "";
+		for (String output : input) 
+		{
+			returnString += output;
+		}
+		return returnString;
 	}
 }

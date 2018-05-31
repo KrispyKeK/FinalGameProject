@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.*;
 import game.controller.*;
 import game.model.*;
@@ -30,9 +32,16 @@ public class gamePanel extends JPanel
 	private JTextField answerSix;
 	private JTextField answerSeven;
 	
+	private JLabel clock;
+	private JLabel scoreBoard;
+	private JLabel countDownLabel;
+	
+	int score;
+	
 	private SpringLayout baseLayout;
 	
 	ArrayList<String> wordSet;
+	ArrayList<String> example;
 	
 	public gamePanel(gameController controller) 
 	{
@@ -42,6 +51,9 @@ public class gamePanel extends JPanel
 
 		enter = new JButton("ENTER");
 		quiz = new JButton("QUIZ");
+		
+		wordSet = new ArrayList<>();
+		example = new ArrayList<>();
 		
 		instruction = new JTextArea("~INSTRUCTIONS~");
 		instruction.setEditable(false);
@@ -54,11 +66,46 @@ public class gamePanel extends JPanel
 		answerSix = new JTextField("l");
 		answerSeven = new JTextField("e");
 		
+		score = 0;
+		
+		clock = new JLabel("Time:");
+		scoreBoard = new JLabel("Score: " + score);
+		countDownLabel = new JLabel("Time Left: ");
+		
 		baseLayout = new SpringLayout();
 				
 		setupPanel();
 		setupListener();
 		setupLayout();
+		setupExample();
+		timer();
+	}
+	private void timer() 
+	{
+		Thread tick = new Thread() 
+		{
+			public void run() 
+			{
+				for (;;) {
+					Calendar calendar = new GregorianCalendar();
+					int second = calendar.get(Calendar.SECOND);
+					int minute = calendar.get(Calendar.MINUTE);
+					int hour = calendar.get(Calendar.HOUR);
+					
+					clock.setText("Time :" + hour + ":" + minute + ":" + second);
+					try 
+					{
+						sleep(1000);
+						
+					}
+					catch (Exception e) 
+					{
+						JOptionPane.showMessageDialog(null, e);
+					}
+				}
+			}
+		};
+		tick.start();
 	}
 	private void setupPanel() 
 	{
@@ -75,6 +122,9 @@ public class gamePanel extends JPanel
 		this.add(answerSix);
 		this.add(answerSeven);
 		
+		this.add(clock);
+		this.add(scoreBoard);
+		
 		this.setLayout(baseLayout);
 	}
 	private void setupListener() 
@@ -83,27 +133,75 @@ public class gamePanel extends JPanel
 		{
 			public void actionPerformed(ActionEvent click) 
 			{
-				if (getInput().equals(wordSet.get(0))) 
+				if (controller.convertArrayToText(wordSet).equals(controller.convertArrayToText(getInput()))) 
 				{
 					instruction.setText("~INSTRUCTIONS~");
+					score++;
+					scoreBoard.setText("Score: " + score);
+					resetExample();
 				}
 				else 
 				{
-					instruction.append("\nTry Again " + wordSet.get(0));
+					instruction.append("\nTry Again" + " " + controller.convertArrayToText(wordSet));
 				}
 			}
 		});
 		quiz.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent click) 
-			{
-				wordSet = controller.getAnswer("example");
-				instruction.append("\n" + wordSet.get(1));
+			{	
+				instruction.setText("~INSTRUCTIONS~");
+				resetExample();
+				for (int index = 0; index < 10; index++) 
+				{
+					wordSet = controller.getAnswer(example);
+					instruction.append("\n" + controller.getInstruction());
+					//instruction.append(" " + controller.convertArrayToText(wordSet));
+				}
 			}
 		});
 	}
+	private void setupExample() 
+	{
+		example.add("e");
+		example.add("x");
+		example.add("a");
+		example.add("m");
+		example.add("p");
+		example.add("l");
+		example.add("e");
+	}
+	private void resetExample() 
+	{
+		answerOne.setText("e");
+		answerTwo.setText("x");
+		answerThree.setText("a");
+		answerFour.setText("m");
+		answerFive.setText("p");
+		answerSix.setText("l");
+		answerSeven.setText("e");
+		
+	}
+	private ArrayList<String> getInput() 
+	{
+		ArrayList<String> inp = new ArrayList<>();
+		inp.add(answerOne.getText());
+		inp.add(answerTwo.getText());
+		inp.add(answerThree.getText());
+		inp.add(answerFour.getText());
+		inp.add(answerFive.getText());
+		inp.add(answerSix.getText());
+		inp.add(answerSeven.getText());
+		return inp;
+	}
 	private void setupLayout() 
 	{
+		baseLayout.putConstraint(SpringLayout.NORTH, countDownLabel, 5, SpringLayout.NORTH, quiz);
+		baseLayout.putConstraint(SpringLayout.EAST, countDownLabel, -26, SpringLayout.WEST, quiz);
+		baseLayout.putConstraint(SpringLayout.NORTH, scoreBoard, 5, SpringLayout.NORTH, quiz);
+		baseLayout.putConstraint(SpringLayout.WEST, scoreBoard, 67, SpringLayout.WEST, this);
+		baseLayout.putConstraint(SpringLayout.NORTH, clock, 5, SpringLayout.NORTH, quiz);
+		baseLayout.putConstraint(SpringLayout.WEST, clock, 0, SpringLayout.WEST, answerFour);
 		baseLayout.putConstraint(SpringLayout.WEST, quiz, 0, SpringLayout.WEST, enter);
 		baseLayout.putConstraint(SpringLayout.SOUTH, quiz, -6, SpringLayout.NORTH, enter);
 		baseLayout.putConstraint(SpringLayout.EAST, quiz, 0, SpringLayout.EAST, enter);
@@ -136,11 +234,6 @@ public class gamePanel extends JPanel
 		baseLayout.putConstraint(SpringLayout.EAST, instruction, 0, SpringLayout.EAST, enter);
 		baseLayout.putConstraint(SpringLayout.SOUTH, enter, -10, SpringLayout.SOUTH, this);
 		baseLayout.putConstraint(SpringLayout.EAST, enter, -10, SpringLayout.EAST, this);
-	}
-	private String getInput() 
-	{
-		String userInput = answerOne.getText() + answerTwo.getText() + answerThree.getText() + answerFour.getText() + answerFive.getText() + answerSix.getText() + answerSeven.getText();
-		return userInput;
 	}
 }
 
